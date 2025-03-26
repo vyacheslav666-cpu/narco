@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Динозаврик с предметами</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #222; }
+        canvas { background: #f4f4f4; display: block; margin: 20px auto; border: 2px solid #444; }
+        .info { color: white; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="info">Нажмите ПРОБЕЛ, чтобы прыгать</div>
+    <canvas id="gameCanvas" width="800" height="300"></canvas>
+	
+<audio id="bgMusic" loop>
+    <source src="background.mp3" type="audio/mpeg">
+    Ваш браузер не поддерживает аудио.
+</audio>
+
+<script>
+    let musicStarted = false; // Флаг, чтобы музыка запускалась только один раз
+
+    document.addEventListener("keydown", (event) => {
+        if (event.code === "Space" && !musicStarted) { 
+            event.preventDefault(); // Блокируем стандартное действие пробела
+            const bgMusic = document.getElementById("bgMusic");
+
+            bgMusic.play().then(() => {
+                musicStarted = true; // После первого нажатия музыка уже не выключится
+                console.log("Музыка включена");
+            }).catch(error => {
+                console.log("Ошибка воспроизведения:", error);
+            });
+        }
+    });
+</script>
+
+
+
+
+
+    <script>
+
+	
+	
+        // Инициализация canvas
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        
+        // Загрузка изображений
+        const assets = {
+            dino: new Image(),
+            coin: new Image(),
+            bg: new Image(),
+			obstacle: new Image()
+        };
+        
+        // Установка путей к изображениям (замените на свои)
+        assets.dino.src = 'nark.png';
+        assets.coin.src = 'klad.png';
+        assets.bg.src = 'background.png';
+		assets.obstacle.src = 'ment.png'
+        
+        // Фолбэк-изображения (если свои не загрузятся)
+        assets.dino.onerror = () => {
+            console.log("Не загружен спрайт динозавра, использую фолбэк");
+            assets.dino.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkEEjIZJc3p3QAAAONJREFUWMPtl7ENwjAQRZ8zQAYgG5AJyAZkA7IB2YBsQDYgG5ANyAZkA3xJkYqQ4tiJk5DKkS3Zsu7+++c7B5ZlWZZlWZZlWZZlWZZlWZZlWZZlWZZlWZZlWZZlWZZlWZb1j14AeuAG9MADeAJv4AXcgQvQBX1q4QycgDtwBz7Ar+QD3IARaIM+RTkCI3AH5h8Gf8kMXIE+6FPEARiAGzBVDP6SGbgAffCnKAMwAk9gqRz8JQswAX3wpyg9cAXmisFfMgMXoA/+FKUDzsBUOfhLJuAMdMGfonTACZgqB3/JCzgBXfCnKP8BzV0juwXQf0QAAAAASUVORK5CYII=';
+        };
+        
+        assets.coin.onerror = () => {
+            console.log("Не загружен спрайт монеты, использую фолбэк");
+            assets.coin.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkEEjEXDhH8TgAAANlJREFUWMPt1rENwjAQRd9rZACyAdmAbEA2IBuQDcgGZAOyAdmAbEA2wJcUqQgxjp3YkVJFlizL9v3/zo4ty7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Is6xe9AXTdC0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSPdGzX2Dd2mGH1jAAAAAElFTkSuQmCC';
+        };
+        
+        assets.bg.onerror = () => {
+            console.log("Не загружен фон, использую фолбэк");
+            assets.bg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkEEjIfDzS+4QAAANVJREFUWMPt1rENwjAQRd9rZACyAdmAbEA2IBuQDcgGZAOyAdmAbEA2wJcUqQgxjp3YkVJFlizL9v3/zo4ty7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Is6xe9AXTdC0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSPdGzX2Dd2mGH1jAAAAAElFTkSuQmCC';
+        };
+        
+		assets.obstacle.onerror = () => {
+    console.log("Не загружен спрайт препятствия, использую фолбэк");
+    assets.obstacle.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkEEjQZ/5h5zAAAAN5JREFUWMPt1rENwjAQRd9rZACyAdmAbEA2IBuQDcgGZAOyAdmAbEA2wJcUqQgxjp3YkVJFlizL9v3/zo4ty7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Is6xe9AXTdC0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSPdGzX2Dd2mGH1jAAAAAElFTkSuQmCC';
+};
+		
+        // Настройки игры
+        let dino = {
+            x: 50,
+            y: 200,
+            width: 60,
+            height: 60,
+            dy: 0,
+            gravity: 1,
+            jumpPower: -15,
+            onGround: false
+        };
+        
+        let obstacles = [];
+        let items = [];
+        let gameSpeed = 6;
+        let score = 0;
+        let isGameOver = false;
+        let framesSinceLastObstacle = 0;
+        let framesSinceLastItem = 0;
+        
+        // Функции отрисовки
+        function drawDino() {
+            try {
+                ctx.drawImage(assets.dino, dino.x, dino.y, dino.width, dino.height);
+            } catch (e) {
+                ctx.fillStyle = "green";
+                ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+            }
+        }
+        
+        function drawObstacles() {
+    obstacles.forEach(obstacle => {
+        try {
+            // Рисуем спрайт препятствия
+            ctx.drawImage(
+                assets.obstacle,
+                obstacle.x,
+                obstacle.y - obstacle.height + 40, // Корректировка позиции Y
+                obstacle.width,
+                obstacle.height
+            );
+        } catch (e) {
+            // Фолбэк - красный прямоугольник
+            ctx.fillStyle = "red";
+            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        }
+    });
+}
+        
+        function drawItems() {
+            items.forEach(item => {
+                try {
+                    ctx.drawImage(assets.coin, item.x, item.y, item.width, item.height);
+                } catch (e) {
+                    ctx.fillStyle = "gold";
+                    ctx.beginPath();
+                    ctx.arc(item.x + item.width/2, item.y + item.height/2, item.width/2, 0, Math.PI*2);
+                    ctx.fill();
+                }
+            });
+        }
+        
+        // Основной игровой цикл
+        function update() {
+            if (isGameOver) return;
+            
+            // Очистка экрана
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Фон
+            try {
+                ctx.drawImage(assets.bg, 0, 0, canvas.width, canvas.height);
+            } catch (e) {
+                ctx.fillStyle = "#87CEEB";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            
+            // Физика динозавра
+            dino.dy += dino.gravity;
+            dino.y += dino.dy;
+            
+            if (dino.y >= 200) {
+                dino.y = 200;
+                dino.dy = 0;
+                dino.onGround = true;
+            } else {
+                dino.onGround = false;
+            }
+            
+            // Генерация препятствий
+            framesSinceLastObstacle++;
+            if (framesSinceLastObstacle > 100 + Math.random() * 50) {
+                obstacles.push({
+                    x: canvas.width,
+                    y: 210,
+                    width: 30,
+                    height: 40
+                });
+                framesSinceLastObstacle = 0;
+            }
+            
+            // Генерация предметов
+            framesSinceLastItem++;
+            if (framesSinceLastItem > 50 + Math.random() * 50) {
+                items.push({
+                    x: canvas.width,
+                    y: 170,
+                    width: 50,
+                    height: 50
+                });
+                framesSinceLastItem = 0;
+            }
+            
+            // Движение объектов
+            obstacles.forEach(obstacle => obstacle.x -= gameSpeed);
+            items.forEach(item => item.x -= gameSpeed);
+            
+			
+			
+            // Удаление вышедших за экран объектов
+            obstacles = obstacles.filter(obstacle => obstacle.x + obstacle.width > 0);
+            items = items.filter(item => item.x + item.width > 0);
+            
+            // Проверка столкновений
+            checkCollisions();
+            
+            // Увеличение счета
+            score++;
+            
+            // Отрисовка
+            drawDino();
+            drawObstacles();
+            drawItems();
+            
+            // Отображение счета
+            ctx.fillStyle = "black";
+            ctx.font = "24px Arial";
+            ctx.fillText("Счет: " + score, 20, 30);
+            
+            requestAnimationFrame(update);
+        }
+        
+        function checkCollisions() {
+            // Столкновение с препятствиями
+            for (let obstacle of obstacles) {
+                if (isColliding(dino, obstacle)) {
+                    endGame();
+                    return;
+                }
+            }
+            
+            // Сбор предметов
+            for (let i = items.length - 1; i >= 0; i--) {
+                if (isColliding(dino, items[i])) {
+                    score += 50;
+                    items.splice(i, 1);
+                }
+            }
+        }
+        
+        function isColliding(a, b) {
+            return a.x < b.x + b.width &&
+                   a.x + a.width > b.x &&
+                   a.y < b.y + b.height &&
+                   a.y + a.height > b.y;
+        }
+        
+        function endGame() {
+            isGameOver = true;
+            
+            // Полупрозрачная подложка
+            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Текст
+            ctx.fillStyle = "white";
+            ctx.font = "36px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Игра окончена!", canvas.width/2, canvas.height/2 - 30);
+            ctx.fillText("Счет: " + score, canvas.width/2, canvas.height/2 + 20);
+            
+            // Кнопка рестарта
+            ctx.fillStyle = "blue";
+            ctx.fillRect(canvas.width/2 - 100, canvas.height/2 + 40, 200, 50);
+            ctx.fillStyle = "white";
+            ctx.font = "20px Arial";
+            ctx.fillText("Играть снова", canvas.width/2, canvas.height/2 + 75);
+            
+            canvas.addEventListener("click", restartGame);
+        }
+        
+        function restartGame(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            if (x >= canvas.width/2 - 100 && x <= canvas.width/2 + 100 &&
+                y >= canvas.height/2 + 40 && y <= canvas.height/2 + 90) {
+                location.reload();
+            }
+        }
+        
+        // Управление
+        document.addEventListener("keydown", function(e) {
+            if (e.code === "Space" && dino.onGround) {
+                dino.dy = dino.jumpPower;
+            }
+        });
+		 
+
+        
+        // Запуск игры через 100мс (даем время на загрузку)
+        setTimeout(update, 100);
+    </script>
+</body>
+</html>
