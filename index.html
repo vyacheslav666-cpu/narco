@@ -72,6 +72,17 @@
         // Инициализация canvas
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
+		
+		// фоны
+		const backgrounds = [
+				"img/background0.png",
+				"img/background1.png",
+				"img/background2.png",
+				"img/background3.png",
+				"img/background4.png"
+			];
+			
+		let currentBgIndex = 0; // Индекс текущего фона
         
         // Загрузка изображений
         const assets = {
@@ -86,7 +97,7 @@
         // Установка путей к изображениям 
         assets.dino.src = 'img/nark.png';
         assets.coin.src = 'img/klad.png';
-        assets.bg.src = 'img/background.png';
+        assets.bg.src = backgrounds[currentBgIndex]; 
 		assets.obstacle.src = 'img/ment.png'
 		assets.rareItem.src = 'img/super-klad.png';
         
@@ -111,7 +122,9 @@
         let isGameOver = false;
         let framesSinceLastObstacle = 0;
         let framesSinceLastItem = 0;
-        
+
+		
+
         // Функции отрисовки
         function drawDino() {
             try {
@@ -169,6 +182,14 @@
 		function updateGameSpeed() {
     gameSpeed = 6 + Math.floor(score / 500); // Каждые 500 очков +1 к скорости
 }
+		// обновление фона
+		function updateBackground() {
+    if (Math.floor(score / 1000) > currentBgIndex) {
+        currentBgIndex = Math.min(Math.floor(score / 1000), backgrounds.length - 1);
+        assets.bg.src = backgrounds[currentBgIndex];
+    }
+}
+
 		
         // Основной игровой цикл
         function update() {
@@ -184,6 +205,9 @@
                 ctx.fillStyle = "#87CEEB";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
+			
+			updateBackground(); 
+
             
             // Физика динозавра
             dino.dy += dino.gravity;
