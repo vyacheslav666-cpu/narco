@@ -78,7 +78,9 @@
             dino: new Image(),
             coin: new Image(),
             bg: new Image(),
-			obstacle: new Image()
+			obstacle: new Image(),
+			rareItem: new Image()
+
         };
         
         // Установка путей к изображениям 
@@ -86,6 +88,7 @@
         assets.coin.src = 'img/klad.png';
         assets.bg.src = 'img/background.png';
 		assets.obstacle.src = 'img/ment.png'
+		assets.rareItem.src = 'img/super-klad.png';
         
 
         // Настройки игры
@@ -102,6 +105,7 @@
         
         let obstacles = [];
         let items = [];
+		let rareItems = [];
         let gameSpeed = 6;
         let score = 0;
         let isGameOver = false;
@@ -149,6 +153,17 @@
                 }
             });
         }
+		
+		function drawRareItems() {
+			rareItems.forEach(item => {
+				try {
+					ctx.drawImage(assets.rareItem, item.x, item.y, item.width, item.height);
+				} catch (e) {
+					ctx.fillStyle = "blue";
+					ctx.fillRect(item.x, item.y, item.width, item.height);
+				}
+			});
+		}
         
 		//скорость
 		function updateGameSpeed() {
@@ -205,11 +220,23 @@
                 });
                 framesSinceLastItem = 0;
             }
+			
+			// Генерация редких предметов (реже обычных)
+				if (Math.random() < 0.002) { // 2% шанс появления
+					rareItems.push({
+						x: canvas.width,
+						y: Math.random() * 150 + 50,
+						width: 60,
+						height: 60
+					});
+					}
             
             // Движение объектов
             obstacles.forEach(obstacle => obstacle.x -= gameSpeed);
             items.forEach(item => item.x -= gameSpeed);
-            
+            rareItems.forEach(item => item.x -= gameSpeed);
+			rareItems = rareItems.filter(item => item.x + item.width > 0);
+
 			
 			
             // Удаление вышедших за экран объектов
@@ -226,6 +253,7 @@
             drawDino();
             drawObstacles();
             drawItems();
+			drawRareItems();
             
             // Отображение счета
             ctx.fillStyle = "white";
@@ -275,6 +303,19 @@
             pickupSound.play().catch(e => console.log("Ошибка воспроизведения:", e));
         }
     }
+	
+	// сбор редких предметов
+	for (let i = rareItems.length - 1; i >= 0; i--) {
+    if (isColliding(dino, rareItems[i])) {
+        score += 200; // Даем больше очков за редкий предмет
+        rareItems.splice(i, 1);
+		
+		// Воспроизводим звук подбора
+            pickupSound.play().catch(e => console.log("Ошибка воспроизведения:", e));
+    }
+}
+
+	
 }
 
         
