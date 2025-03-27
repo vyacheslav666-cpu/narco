@@ -30,6 +30,10 @@
     <source src="music/jump.mp3" type="audio/mpeg">
 </audio>
 
+<audio id="rareItemSound">
+    <source src="music/rareItem.mp3" type="audio/mpeg">
+</audio>
+
 <script>
     let musicStarted = false; 
     const musicTracks = [
@@ -373,6 +377,8 @@ function drawBackground() {
         function checkCollisions() {
     const pickupSound = document.getElementById("pickupSound");
 	const looseSound = document.getElementById("looseSound");
+	const rareItemSound = document.getElementById("rareItemSound");
+	
 
     // Столкновение с препятствиями
     for (let obstacle of obstacles) {
@@ -401,7 +407,7 @@ function drawBackground() {
         rareItems.splice(i, 1);
 		
 		// Воспроизводим звук подбора
-            pickupSound.play().catch(e => console.log("Ошибка воспроизведения:", e));
+            rareItemSound.play().catch(e => console.log("Ошибка воспроизведения:", e));
     }
 }
 
