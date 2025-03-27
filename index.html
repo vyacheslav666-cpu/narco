@@ -298,17 +298,18 @@ function drawBackground() {
                 framesSinceLastObstacle = 0;
             }
             
-            // Генерация предметов
+            // Генерация предметов`
             framesSinceLastItem++;
             if (framesSinceLastItem > 50 + Math.random() * 50) {
-                items.push({
-                    x: canvas.width,
-                    y: 80,
-                    width: 50,
-                    height: 50
-                });
-                framesSinceLastItem = 0;
-            }
+				const possibleHeights = [80, 120, 160]; // Разные возможные высоты
+				items.push({
+					x: canvas.width,
+					y: possibleHeights[Math.floor(Math.random() * possibleHeights.length)],
+					width: 50,
+					height: 50
+				});
+				framesSinceLastItem = 0;
+			}
 			
 			// Генерация редких предметов (реже обычных)
 				if (Math.random() < 0.002) { // 2% шанс появления
