@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Динозаврик с предметами</title>
+    <title>Симулор солевого</title>
     <style>
         body { text-align: center; font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #222; }
         canvas { background: #f4f4f4; display: block; margin: 20px auto; border: 2px solid #444; }
@@ -15,7 +15,7 @@
     <canvas id="gameCanvas" width="800" height="300"></canvas>
 	
 <audio id="bgMusic" loop>
-    <source src="background.mp3" type="audio/mpeg">
+    <source src="background0.mp3" type="audio/mpeg">
     Ваш браузер не поддерживает аудио.
 </audio>
 
@@ -38,9 +38,6 @@
 </script>
 
 
-
-
-
     <script>
 
 	
@@ -57,42 +54,22 @@
 			obstacle: new Image()
         };
         
-        // Установка путей к изображениям (замените на свои)
+        // Установка путей к изображениям 
         assets.dino.src = 'nark.png';
         assets.coin.src = 'klad.png';
         assets.bg.src = 'background.png';
 		assets.obstacle.src = 'ment.png'
         
-        // Фолбэк-изображения (если свои не загрузятся)
-        assets.dino.onerror = () => {
-            console.log("Не загружен спрайт динозавра, использую фолбэк");
-            assets.dino.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkEEjIZJc3p3QAAAONJREFUWMPtl7ENwjAQRZ8zQAYgG5AJyAZkA7IB2YBsQDYgG5ANyAZkA3xJkYqQ4tiJk5DKkS3Zsu7+++c7B5ZlWZZlWZZlWZZlWZZlWZZlWZZlWZZlWZZlWZZlWZZlWZb1j14AeuAG9MADeAJv4AXcgQvQBX1q4QycgDtwBz7Ar+QD3IARaIM+RTkCI3AH5h8Gf8kMXIE+6FPEARiAGzBVDP6SGbgAffCnKAMwAk9gqRz8JQswAX3wpyg9cAXmisFfMgMXoA/+FKUDzsBUOfhLJuAMdMGfonTACZgqB3/JCzgBXfCnKP8BzV0juwXQf0QAAAAASUVORK5CYII=';
-        };
-        
-        assets.coin.onerror = () => {
-            console.log("Не загружен спрайт монеты, использую фолбэк");
-            assets.coin.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkEEjEXDhH8TgAAANlJREFUWMPt1rENwjAQRd9rZACyAdmAbEA2IBuQDcgGZAOyAdmAbEA2wJcUqQgxjp3YkVJFlizL9v3/zo4ty7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Is6xe9AXTdC0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSPdGzX2Dd2mGH1jAAAAAElFTkSuQmCC';
-        };
-        
-        assets.bg.onerror = () => {
-            console.log("Не загружен фон, использую фолбэк");
-            assets.bg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkEEjIfDzS+4QAAANVJREFUWMPt1rENwjAQRd9rZACyAdmAbEA2IBuQDcgGZAOyAdmAbEA2wJcUqQgxjp3YkVJFlizL9v3/zo4ty7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Is6xe9AXTdC0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSPdGzX2Dd2mGH1jAAAAAElFTkSuQmCC';
-        };
-        
-		assets.obstacle.onerror = () => {
-    console.log("Не загружен спрайт препятствия, использую фолбэк");
-    assets.obstacle.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkEEjQZ/5h5zAAAAN5JREFUWMPt1rENwjAQRd9rZACyAdmAbEA2IBuQDcgGZAOyAdmAbEA2wJcUqQgxjp3YkVJFlizL9v3/zo4ty7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Isy7Is6xe9AXTdC0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSNc9gXTdE0jXPYF03RNI1z2BdN0TSPdGzX2Dd2mGH1jAAAAAElFTkSuQmCC';
-};
-		
+
         // Настройки игры
         let dino = {
-            x: 50,
-            y: 200,
-            width: 60,
-            height: 60,
+            x: 100,
+            y: 100,
+            width: 80,
+            height: 80,
             dy: 0,
             gravity: 1,
-            jumpPower: -15,
+            jumpPower: -19,
             onGround: false
         };
         
@@ -178,9 +155,9 @@
             if (framesSinceLastObstacle > 100 + Math.random() * 50) {
                 obstacles.push({
                     x: canvas.width,
-                    y: 210,
-                    width: 30,
-                    height: 40
+                    y: 250,
+                    width: 60,
+                    height: 80
                 });
                 framesSinceLastObstacle = 0;
             }
@@ -190,7 +167,7 @@
             if (framesSinceLastItem > 50 + Math.random() * 50) {
                 items.push({
                     x: canvas.width,
-                    y: 170,
+                    y: 80,
                     width: 50,
                     height: 50
                 });
@@ -211,7 +188,7 @@
             checkCollisions();
             
             // Увеличение счета
-            score++;
+            //score++;
             
             // Отрисовка
             drawDino();
@@ -219,9 +196,9 @@
             drawItems();
             
             // Отображение счета
-            ctx.fillStyle = "black";
-            ctx.font = "24px Arial";
-            ctx.fillText("Счет: " + score, 20, 30);
+            ctx.fillStyle = "white";
+            ctx.font = "24px Arial bold";
+            ctx.fillText("Вы собрали " + score + " мг", 20, 30);
             
             requestAnimationFrame(update);
         }
@@ -263,10 +240,10 @@
             ctx.font = "36px Arial";
             ctx.textAlign = "center";
             ctx.fillText("Игра окончена!", canvas.width/2, canvas.height/2 - 30);
-            ctx.fillText("Счет: " + score, canvas.width/2, canvas.height/2 + 20);
+            ctx.fillText("Счет: " + score + " милиграмм", canvas.width/2, canvas.height/2 + 20);
             
             // Кнопка рестарта
-            ctx.fillStyle = "blue";
+            ctx.fillStyle = "red";
             ctx.fillRect(canvas.width/2 - 100, canvas.height/2 + 40, 200, 50);
             ctx.fillStyle = "white";
             ctx.font = "20px Arial";
