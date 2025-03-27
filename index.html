@@ -15,27 +15,41 @@
     <canvas id="gameCanvas" width="800" height="300"></canvas>
 	
 <audio id="bgMusic" loop>
-    <source src="background0.mp3" type="audio/mpeg">
     Ваш браузер не поддерживает аудио.
 </audio>
 
 <script>
-    let musicStarted = false; // Флаг, чтобы музыка запускалась только один раз
+    let musicStarted = false; 
+    const musicTracks = [
+        "background0.mp3",
+        "background1.mp3",
+        "background2.mp3",
+        "background3.mp3",
+        "background4.mp3"
+    ];
 
     document.addEventListener("keydown", (event) => {
         if (event.code === "Space" && !musicStarted) { 
-            event.preventDefault(); // Блокируем стандартное действие пробела
+            event.preventDefault();  
             const bgMusic = document.getElementById("bgMusic");
 
+            // Выбираем случайный трек
+            const randomTrack = musicTracks[Math.floor(Math.random() * musicTracks.length)];
+            bgMusic.src = randomTrack;
+            bgMusic.load(); // Загружаем новый источник перед воспроизведением
+
             bgMusic.play().then(() => {
-                musicStarted = true; // После первого нажатия музыка уже не выключится
-                console.log("Музыка включена");
+                musicStarted = true; 
+                console.log("Играет: " + randomTrack);
             }).catch(error => {
                 console.log("Ошибка воспроизведения:", error);
             });
         }
     });
 </script>
+
+
+
 
 
     <script>
