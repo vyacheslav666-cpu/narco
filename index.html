@@ -150,6 +150,11 @@
             });
         }
         
+		//скорость
+		function updateGameSpeed() {
+    gameSpeed = 6 + Math.floor(score / 500); // Каждые 500 очков +1 к скорости
+}
+		
         // Основной игровой цикл
         function update() {
             if (isGameOver) return;
@@ -241,6 +246,9 @@
 			ctx.shadowOffsetX = 0;
 			ctx.shadowOffsetY = 0;
             
+			// обновление скорости
+			updateGameSpeed()
+			
             requestAnimationFrame(update);
         }
         
