@@ -122,6 +122,15 @@
         let isGameOver = false;
         let framesSinceLastObstacle = 0;
         let framesSinceLastItem = 0;
+		
+		// переменные для смены фона
+		let bgTransition = {
+			active: false,
+			progress: 0, // 0-1
+			duration: 60, // frames
+			currentBg: null,
+			nextBg: null
+		};
 
 		
 
@@ -184,9 +193,70 @@
 }
 		// обновление фона
 		function updateBackground() {
-    if (Math.floor(score / 1000) > currentBgIndex) {
-        currentBgIndex = Math.min(Math.floor(score / 1000), backgrounds.length - 1);
-        assets.bg.src = backgrounds[currentBgIndex];
+    const newBgIndex = Math.min(Math.floor(score / 1000), backgrounds.length - 1);
+    
+    if (newBgIndex > currentBgIndex && !bgTransition.active) {
+        // Начинаем переход
+        currentBgIndex = newBgIndex;
+        bgTransition.active = true;
+        bgTransition.progress = 0;
+        bgTransition.currentBg = assets.bg;
+        
+        // Предзагружаем следующий фон
+        const nextBg = new Image();
+        nextBg.src = backgrounds[currentBgIndex];
+        bgTransition.nextBg = nextBg;
+    }
+}	
+
+// анимация смены фона
+function drawBackground() {
+    if (!bgTransition.active) {
+        // Обычный режим - просто рисуем текущий фон
+        try {
+            ctx.drawImage(assets.bg, 0, 0, canvas.width, canvas.height);
+        } catch (e) {
+            ctx.fillStyle = "#87CEEB";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+    } else {
+        // Режим перехода
+        if (bgTransition.nextBg.complete) {
+            // Рисуем оба фона с прозрачностью
+            ctx.globalAlpha = 1 - bgTransition.progress;
+            try {
+                ctx.drawImage(bgTransition.currentBg, 0, 0, canvas.width, canvas.height);
+            } catch (e) {
+                ctx.fillStyle = "#87CEEB";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            
+            ctx.globalAlpha = bgTransition.progress;
+            try {
+                ctx.drawImage(bgTransition.nextBg, 0, 0, canvas.width, canvas.height);
+            } catch (e) {
+                ctx.fillStyle = "#87CEEB";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            ctx.globalAlpha = 1;
+            
+            // Увеличиваем прогресс перехода
+            bgTransition.progress += 1 / bgTransition.duration;
+            
+            // Если переход завершен
+            if (bgTransition.progress >= 1) {
+                bgTransition.active = false;
+                assets.bg = bgTransition.nextBg;
+            }
+        } else {
+            // Если новый фон еще не загрузился, рисуем старый
+            try {
+                ctx.drawImage(bgTransition.currentBg, 0, 0, canvas.width, canvas.height);
+            } catch (e) {
+                ctx.fillStyle = "#87CEEB";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+        }
     }
 }
 
@@ -199,12 +269,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             // Фон
-            try {
-                ctx.drawImage(assets.bg, 0, 0, canvas.width, canvas.height);
-            } catch (e) {
-                ctx.fillStyle = "#87CEEB";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
+            drawBackground();
 			
 			updateBackground(); 
 
