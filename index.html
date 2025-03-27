@@ -384,7 +384,7 @@ function drawBackground() {
     for (let obstacle of obstacles) {
         if (isColliding(dino, obstacle)) {
             // Проверяем, находится ли динозавр справа от препятствия
-            if (dino.x > obstacle.x + obstacle.width) {
+            if (dino.x > obstacle.x + obstacle.width - 50) {
                 // Динозавр уже прошел препятствие - не считаем столкновение
                 continue;
             }
