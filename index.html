@@ -26,6 +26,10 @@
     <source src="loose.mp3" type="audio/mpeg">
 </audio>
 
+<audio id="jumpSound">
+    <source src="jump.mp3" type="audio/mpeg">
+</audio>
+
 <script>
     let musicStarted = false; 
     const musicTracks = [
@@ -310,10 +314,16 @@
         
         // Управление
         document.addEventListener("keydown", function(e) {
-            if (e.code === "Space" && dino.onGround) {
-                dino.dy = dino.jumpPower;
-            }
-        });
+    if (e.code === "Space" && dino.onGround) {
+        dino.dy = dino.jumpPower;
+
+        // Воспроизводим звук прыжка
+        const jumpSound = document.getElementById("jumpSound");
+        jumpSound.currentTime = 0; // Чтобы звук можно было проигрывать быстро подряд
+        jumpSound.play().catch(e => console.log("Ошибка воспроизведения:", e));
+    }
+});
+
 		 
 
         
