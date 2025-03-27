@@ -18,6 +18,14 @@
     Ваш браузер не поддерживает аудио.
 </audio>
 
+<audio id="pickupSound">
+    <source src="pick.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="looseSound">
+    <source src="loose.mp3" type="audio/mpeg">
+</audio>
+
 <script>
     let musicStarted = false; 
     const musicTracks = [
@@ -37,7 +45,8 @@
             const randomTrack = musicTracks[Math.floor(Math.random() * musicTracks.length)];
             bgMusic.src = randomTrack;
             bgMusic.load(); // Загружаем новый источник перед воспроизведением
-
+			
+			bgMusic.volume = 0.7;
             bgMusic.play().then(() => {
                 musicStarted = true; 
                 console.log("Играет: " + randomTrack);
@@ -232,22 +241,30 @@
         }
         
         function checkCollisions() {
-            // Столкновение с препятствиями
-            for (let obstacle of obstacles) {
-                if (isColliding(dino, obstacle)) {
-                    endGame();
-                    return;
-                }
-            }
-            
-            // Сбор предметов
-            for (let i = items.length - 1; i >= 0; i--) {
-                if (isColliding(dino, items[i])) {
-                    score += 50;
-                    items.splice(i, 1);
-                }
-            }
+    const pickupSound = document.getElementById("pickupSound");
+	const looseSound = document.getElementById("looseSound");
+
+    // Столкновение с препятствиями
+    for (let obstacle of obstacles) {
+        if (isColliding(dino, obstacle)) {
+			looseSound.play().catch(e => console.log("Ошибка воспроизведения:", e));
+            endGame();
+            return;
         }
+    }
+
+    // Сбор предметов
+    for (let i = items.length - 1; i >= 0; i--) {
+        if (isColliding(dino, items[i])) {
+            score += 50;
+            items.splice(i, 1);
+            
+            // Воспроизводим звук подбора
+            pickupSound.play().catch(e => console.log("Ошибка воспроизведения:", e));
+        }
+    }
+}
+
         
         function isColliding(a, b) {
             return a.x < b.x + b.width &&
