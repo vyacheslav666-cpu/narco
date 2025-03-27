@@ -383,7 +383,13 @@ function drawBackground() {
     // Столкновение с препятствиями
     for (let obstacle of obstacles) {
         if (isColliding(dino, obstacle)) {
-			looseSound.play().catch(e => console.log("Ошибка воспроизведения:", e));
+            // Проверяем, находится ли динозавр справа от препятствия
+            if (dino.x > obstacle.x + obstacle.width) {
+                // Динозавр уже прошел препятствие - не считаем столкновение
+                continue;
+            }
+            
+            looseSound.play().catch(e => console.log("Ошибка воспроизведения:", e));
             endGame();
             return;
         }
@@ -425,6 +431,9 @@ function drawBackground() {
         function endGame() {
             isGameOver = true;
             
+			items = [];
+			rareItems = [];
+
             // Полупрозрачная подложка
             ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
