@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Симулор солевого</title>
+    <title>Симулятор солевого</title>
     <style>
         body { text-align: center; font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #222; }
         canvas { background: #f4f4f4; display: block; margin: 20px auto; border: 2px solid #444; }
@@ -19,25 +19,25 @@
 </audio>
 
 <audio id="pickupSound">
-    <source src="pick.mp3" type="audio/mpeg">
+    <source src="music/pick.mp3" type="audio/mpeg">
 </audio>
 
 <audio id="looseSound">
-    <source src="loose.mp3" type="audio/mpeg">
+    <source src="music/loose.mp3" type="audio/mpeg">
 </audio>
 
 <audio id="jumpSound">
-    <source src="jump.mp3" type="audio/mpeg">
+    <source src="music/jump.mp3" type="audio/mpeg">
 </audio>
 
 <script>
     let musicStarted = false; 
     const musicTracks = [
-        "background0.mp3",
-        "background1.mp3",
-        "background2.mp3",
-        "background3.mp3",
-        "background4.mp3"
+        "music/background0.mp3",
+        "music/background1.mp3",
+        "music/background2.mp3",
+        "music/background3.mp3",
+        "music/background4.mp3"
     ];
 
     document.addEventListener("keydown", (event) => {
@@ -82,10 +82,10 @@
         };
         
         // Установка путей к изображениям 
-        assets.dino.src = 'nark.png';
-        assets.coin.src = 'klad.png';
-        assets.bg.src = 'background.png';
-		assets.obstacle.src = 'ment.png'
+        assets.dino.src = 'img/nark.png';
+        assets.coin.src = 'img/klad.png';
+        assets.bg.src = 'img/background.png';
+		assets.obstacle.src = 'img/ment.png'
         
 
         // Настройки игры
