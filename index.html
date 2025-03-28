@@ -573,12 +573,15 @@ function update() {
             jumpSound.currentTime = 0; 
             jumpSound.play().catch(e => console.log("Ошибка звука:", e));
 			
+			
 			// Управление на мобильных (нажатие кнопки)
-			document.getElementById("jumpButton").addEventListener("click", jump);
+document.getElementById("jumpButton").addEventListener("click", jump);
 
-		// Управление на мобильных (тап по экрану)
-		document.addEventListener("touchstart", function() {
-			jump();
+// Управление на мобильных (тап по экрану)
+document.addEventListener("touchstart", function() {
+    jump();
+});
+			
         }
     }
 
