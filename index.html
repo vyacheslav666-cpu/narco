@@ -328,27 +328,51 @@ function update() {
     }
     
     // Генерация предметов
-    framesSinceLastItem++;
-    if (framesSinceLastItem > 50 + Math.random() * 50) {
-        const possibleHeights = [80, 120, 160];
-        items.push({
-            x: canvas.width,
-            y: possibleHeights[Math.floor(Math.random() * possibleHeights.length)],
-            width: 50,
-            height: 50
-        });
-        framesSinceLastItem = 0;
-    }
+		framesSinceLastItem++;
+		if (framesSinceLastItem > 50 + Math.random() * 50) {
+			const possibleHeights = [80, 120, 160];
+			const height = possibleHeights[Math.floor(Math.random() * possibleHeights.length)];
+			items.push({
+				x: canvas.width,
+				y: height,
+				baseY: height, // Запоминаем начальную позицию
+				width: 50,
+				height: 50,
+				oscillationHeight: 5 + Math.random() * 10, // Случайная амплитуда
+				oscillationSpeed: 0.05 + Math.random() * 0.05, // Случайная скорость
+				time: 0
+			});
+			framesSinceLastItem = 0;
+		}
+
+		// Движение и анимация
+		items.forEach(item => {
+			item.time += item.oscillationSpeed;
+			item.y = item.baseY + Math.sin(item.time) * item.oscillationHeight;
+			item.x -= gameSpeed;
+		});
     
-    // Генерация редких предметов
-    if (Math.random() < 0.002) {
-        rareItems.push({
-            x: canvas.width,
-            y: Math.random() * 150 + 50,
-            width: 60,
-            height: 60
-        });
-    }
+// Генерация редких предметов
+		if (Math.random() < 0.002) {
+			const yPos = Math.random() * 150 + 50;
+			rareItems.push({
+				x: canvas.width,
+				y: yPos,
+				baseY: yPos,
+				width: 60,
+				height: 60,
+				oscillationHeight: 10 + Math.random() * 15, // Больше амплитуда
+				oscillationSpeed: 0.1 + Math.random() * 0.1, // Быстрее колебания
+				time: 0
+			});
+		}
+
+		// Движение и анимация
+		rareItems.forEach(item => {
+			item.time += item.oscillationSpeed;
+			item.y = item.baseY + Math.sin(item.time) * item.oscillationHeight;
+			item.x -= gameSpeed;
+		});
     
     // Движение объектов
     obstacles.forEach(obstacle => obstacle.x -= gameSpeed);
