@@ -8,7 +8,7 @@
         body { text-align: center; font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #222; }
         canvas { background: #f4f4f4; display: block; margin: 20px auto; border: 2px solid #444; }
         .info { color: white; margin-bottom: 10px; }
-    </style>
+    <!-- </style> -->
 </head>
 <body>
     <div class="info">Нажмите ПРОБЕЛ или тапните по экрану, чтобы прыгать</div>
@@ -91,12 +91,21 @@
         
         // Загрузка изображений
         const assets = {
-            dino: new Image(),
             coin: new Image(),
             bg: new Image(),
 			rareItem: new Image()
 
         };
+		
+		// кадры нарка
+		const dinoFrames = {
+        idle: new Image(),
+        jump: new Image()
+    };
+		
+	    dinoFrames.idle.src = 'img/nark_idle.png'; // Кадр когда стоит
+		dinoFrames.jump.src = 'img/nark_jump.png'; // Кадр в прыжке
+
 		
 		// кадры мента
 		const obstacleFrames = [
@@ -114,23 +123,24 @@
 
         
         // Установка путей к изображениям 
-        assets.dino.src = 'img/nark.png';
+       
         assets.coin.src = 'img/klad.png';
         assets.bg.src = backgrounds[currentBgIndex]; 
 		assets.rareItem.src = 'img/super-klad.png';
         
 
         // Настройки игры
-        let dino = {
-            x: 100,
-            y: 100,
-            width: 80,
-            height: 80,
-            dy: 0,
-            gravity: 1,
-            jumpPower: -19,
-            onGround: false
-        };
+         let dino = {
+			x: 100,
+			y: 100,
+			width: 80,
+			height: 80,
+			dy: 0,
+			gravity: 1,
+			jumpPower: -19,
+			onGround: false,
+			currentFrame: 'idle' // Текущий кадр анимации
+		};
         
         let obstacles = [];
         let items = [];
@@ -153,14 +163,22 @@
 		
 
         // Функции отрисовки
-        function drawDino() {
-            try {
-                ctx.drawImage(assets.dino, dino.x, dino.y, dino.width, dino.height);
-            } catch (e) {
-                ctx.fillStyle = "green";
-                ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
-            }
+            function drawDino() {
+        try {
+            // Рисуем соответствующий кадр
+            ctx.drawImage(
+                dinoFrames[dino.currentFrame], 
+                dino.x, 
+                dino.y, 
+                dino.width, 
+                dino.height
+            );
+        } catch (e) {
+            // Фолбэк если изображения не загрузились
+            ctx.fillStyle = dino.currentFrame === 'jump' ? "darkgreen" : "green";
+            ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
         }
+    }
         
 		// рисуем препятствие
         function drawObstacles() {
@@ -303,6 +321,11 @@ function update() {
     // Физика динозавра
     dino.dy += dino.gravity;
     dino.y += dino.dy;
+	
+	// прыжок
+	 if (dino.onGround) {
+            dino.currentFrame = 'idle';
+        }
     
     if (dino.y >= 200) {
         dino.y = 200;
@@ -523,14 +546,18 @@ function update() {
 			}
 		});
 
-		function jump() {
-			dino.dy = dino.jumpPower;
-
-			// Воспроизводим звук прыжка
-			const jumpSound = document.getElementById("jumpSound");
-			jumpSound.currentTime = 0; 
-			jumpSound.play().catch(e => console.log("Ошибка воспроизведения:", e));
-		}
+		 // Модифицируем функцию прыжка
+    function jump() {
+        if (dino.onGround) {
+            dino.dy = dino.jumpPower;
+            dino.onGround = false;
+            dino.currentFrame = 'jump'; // Переключаем на кадр прыжка
+            
+            const jumpSound = document.getElementById("jumpSound");
+            jumpSound.currentTime = 0; 
+            jumpSound.play().catch(e => console.log("Ошибка звука:", e));
+        }
+    }
 
 
 		 
