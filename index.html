@@ -292,15 +292,19 @@ function drawBackground() {
             
             // Генерация препятствий
             framesSinceLastObstacle++;
-            if (framesSinceLastObstacle > 100 + Math.random() * 50) {
-                obstacles.push({
-                    x: canvas.width,
-                    y: 250,
-                    width: 60,
-                    height: 80
-                });
-                framesSinceLastObstacle = 0;
-            }
+					const minFrames = 80;  // Минимальное расстояние между препятствиями
+					const maxFrames = 180; // Максимальное расстояние
+					const randomFactor = Math.random() * (maxFrames - minFrames); 
+
+					if (framesSinceLastObstacle > minFrames + randomFactor) {
+						obstacles.push({
+							x: canvas.width,
+							y: 250,
+							width: 60,
+							height: 80
+						});
+						framesSinceLastObstacle = 0;
+					}
             
             // Генерация предметов`
             framesSinceLastItem++;
