@@ -8,11 +8,27 @@
         body { text-align: center; font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #222; }
         canvas { background: #f4f4f4; display: block; margin: 20px auto; border: 2px solid #444; }
         .info { color: white; margin-bottom: 10px; }
-    <!-- </style> -->
+		
+		#jumpButton {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 30px;
+    font-size: 18px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+		
+    </style>
 </head>
 <body>
     <div class="info">Нажмите ПРОБЕЛ или тапните по экрану, чтобы прыгать</div>
-	
+	<button id="jumpButton">ПРЫЖОК</button>
+
     <canvas id="gameCanvas" width="800" height="300"></canvas>
 	
 <audio id="bgMusic" loop>
@@ -123,7 +139,7 @@
 
         
         // Установка путей к изображениям 
-		
+       
         assets.coin.src = 'img/klad.png';
         assets.bg.src = backgrounds[currentBgIndex]; 
 		assets.rareItem.src = 'img/super-klad.png';
@@ -540,12 +556,11 @@ function update() {
 			}
 		});
 
-		document.addEventListener("touchend", function(event) {
-    event.preventDefault(); // Предотвращаем стандартное поведение (например, зум или выделение)
-    if (dino.onGround) {
-        jump();
-    }
-}, { passive: false });
+		document.addEventListener("touchstart", function() {
+			if (dino.onGround) {
+				jump();
+			}
+		});
 
 		 // Модифицируем функцию прыжка
     function jump() {
@@ -557,6 +572,13 @@ function update() {
             const jumpSound = document.getElementById("jumpSound");
             jumpSound.currentTime = 0; 
             jumpSound.play().catch(e => console.log("Ошибка звука:", e));
+			
+			// Управление на мобильных (нажатие кнопки)
+			document.getElementById("jumpButton").addEventListener("click", jump);
+
+		// Управление на мобильных (тап по экрану)
+		document.addEventListener("touchstart", function() {
+			jump();
         }
     }
 
