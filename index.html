@@ -123,7 +123,7 @@
 
         
         // Установка путей к изображениям 
-       
+		
         assets.coin.src = 'img/klad.png';
         assets.bg.src = backgrounds[currentBgIndex]; 
 		assets.rareItem.src = 'img/super-klad.png';
@@ -540,11 +540,12 @@ function update() {
 			}
 		});
 
-		document.addEventListener("touchstart", function() {
-			if (dino.onGround) {
-				jump();
-			}
-		});
+		document.addEventListener("touchend", function(event) {
+    event.preventDefault(); // Предотвращаем стандартное поведение (например, зум или выделение)
+    if (dino.onGround) {
+        jump();
+    }
+}, { passive: false });
 
 		 // Модифицируем функцию прыжка
     function jump() {
