@@ -93,16 +93,29 @@
             dino: new Image(),
             coin: new Image(),
             bg: new Image(),
-			obstacle: new Image(),
 			rareItem: new Image()
 
         };
+		
+		// кадры мента
+		const obstacleFrames = [
+			new Image(),
+			new Image(),
+			new Image()
+		];
+		
+		obstacleFrames[0].src = 'img/ment_0.png';
+		obstacleFrames[1].src = 'img/ment_1.png';
+		obstacleFrames[2].src = 'img/ment_2.png';
+		
+		let obstacleFrameIndex = 0;  // Текущий кадр анимации
+		let obstacleFrameCounter = 0; // Счётчик кадров для переключения анимации
+
         
         // Установка путей к изображениям 
         assets.dino.src = 'img/nark.png';
         assets.coin.src = 'img/klad.png';
         assets.bg.src = backgrounds[currentBgIndex]; 
-		assets.obstacle.src = 'img/ment.png'
 		assets.rareItem.src = 'img/super-klad.png';
         
 
@@ -148,24 +161,32 @@
             }
         }
         
+		// рисуем препятствие
         function drawObstacles() {
-    obstacles.forEach(obstacle => {
-        try {
-            // Рисуем спрайт препятствия
-            ctx.drawImage(
-                assets.obstacle,
-                obstacle.x,
-                obstacle.y - obstacle.height + 40, // Корректировка позиции Y
-                obstacle.width,
-                obstacle.height
-            );
-        } catch (e) {
-            // Фолбэк - красный прямоугольник
-            ctx.fillStyle = "red";
-            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-        }
-    });
-}
+			obstacles.forEach(obstacle => {
+				try {
+					ctx.drawImage(
+						obstacleFrames[obstacleFrameIndex], // Используем текущий кадр
+						obstacle.x,
+						obstacle.y - obstacle.height + 40, 
+						obstacle.width,
+						obstacle.height
+					);
+				} catch (e) {
+					ctx.fillStyle = "red";
+					ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+				}
+			});
+		}
+		
+		// Функция обновления анимации препятствия
+			function updateObstacleAnimation() {
+				obstacleFrameCounter++;
+				if (obstacleFrameCounter > 10) { // Менять кадр каждые 10 кадров
+					obstacleFrameIndex = (obstacleFrameIndex + 1) % obstacleFrames.length;
+					obstacleFrameCounter = 0;
+				}
+			}
         
         function drawItems() {
             items.forEach(item => {
@@ -266,118 +287,112 @@ function drawBackground() {
 
 		
         // Основной игровой цикл
-        function update() {
-            if (isGameOver) return;
-            
-            // Очистка экрана
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Фон
-            drawBackground();
-			
-			updateBackground(); 
-
-            
-            // Физика динозавра
-            dino.dy += dino.gravity;
-            dino.y += dino.dy;
-            
-            if (dino.y >= 200) {
-                dino.y = 200;
-                dino.dy = 0;
-                dino.onGround = true;
-            } else {
-                dino.onGround = false;
-            }
-            
-            // Генерация препятствий
-            framesSinceLastObstacle++;
-					const minFrames = 80;  // Минимальное расстояние между препятствиями
-					const maxFrames = 180; // Максимальное расстояние
-					const randomFactor = Math.random() * (maxFrames - minFrames); 
-
-					if (framesSinceLastObstacle > minFrames + randomFactor) {
-						obstacles.push({
-							x: canvas.width,
-							y: 250,
-							width: 60,
-							height: 80
-						});
-						framesSinceLastObstacle = 0;
-					}
-            
-            // Генерация предметов`
-            framesSinceLastItem++;
-            if (framesSinceLastItem > 50 + Math.random() * 50) {
-				const possibleHeights = [80, 120, 160]; // Разные возможные высоты
-				items.push({
-					x: canvas.width,
-					y: possibleHeights[Math.floor(Math.random() * possibleHeights.length)],
-					width: 50,
-					height: 50
-				});
-				framesSinceLastItem = 0;
-			}
-			
-			// Генерация редких предметов (реже обычных)
-				if (Math.random() < 0.002) { // 2% шанс появления
-					rareItems.push({
-						x: canvas.width,
-						y: Math.random() * 150 + 50,
-						width: 60,
-						height: 60
-					});
-					}
-            
-            // Движение объектов
-            obstacles.forEach(obstacle => obstacle.x -= gameSpeed);
-            items.forEach(item => item.x -= gameSpeed);
-            rareItems.forEach(item => item.x -= gameSpeed);
-			rareItems = rareItems.filter(item => item.x + item.width > 0);
-
-			
-			
-            // Удаление вышедших за экран объектов
-            obstacles = obstacles.filter(obstacle => obstacle.x + obstacle.width > 0);
-            items = items.filter(item => item.x + item.width > 0);
-            
-            // Проверка столкновений
-            checkCollisions();
-            
-            // Увеличение счета
-            //score++;
-            
-            // Отрисовка
-            drawDino();
-            drawObstacles();
-            drawItems();
-			drawRareItems();
-            
-            // Отображение счета
-            ctx.fillStyle = "white";
-			ctx.font = "24px Arial bold";
-			ctx.textAlign = "left";
-			ctx.textBaseline = "top";
-
-			// Чёрная обводка
-			ctx.shadowColor = "black";
-			ctx.shadowBlur = 0;
-			ctx.shadowOffsetX = 2;
-			ctx.shadowOffsetY = 2;
-
-			// Рисуем текст
-			ctx.fillText("Вы собрали " + score + " мг", 20, 30);
-
-			// Убираем обводку, чтобы не влияла на другие элементы
-			ctx.shadowOffsetX = 0;
-			ctx.shadowOffsetY = 0;
-            
-			// обновление скорости
-			updateGameSpeed()
-			
-            requestAnimationFrame(update);
-        }
+function update() {
+    if (isGameOver) return;
+    
+    // Очистка экрана
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Отрисовка фона
+    drawBackground();
+    
+    // Обновление анимации препятствий
+    updateObstacleAnimation();
+    
+    // Физика динозавра
+    dino.dy += dino.gravity;
+    dino.y += dino.dy;
+    
+    if (dino.y >= 200) {
+        dino.y = 200;
+        dino.dy = 0;
+        dino.onGround = true;
+    } else {
+        dino.onGround = false;
+    }
+    
+    // Генерация препятствий
+    framesSinceLastObstacle++;
+    const minFrames = 80;
+    const maxFrames = 180;
+    const randomFactor = Math.random() * (maxFrames - minFrames);
+    
+    if (framesSinceLastObstacle > minFrames + randomFactor) {
+        obstacles.push({
+            x: canvas.width,
+            y: 250,
+            width: 60,
+            height: 80
+        });
+        framesSinceLastObstacle = 0;
+    }
+    
+    // Генерация предметов
+    framesSinceLastItem++;
+    if (framesSinceLastItem > 50 + Math.random() * 50) {
+        const possibleHeights = [80, 120, 160];
+        items.push({
+            x: canvas.width,
+            y: possibleHeights[Math.floor(Math.random() * possibleHeights.length)],
+            width: 50,
+            height: 50
+        });
+        framesSinceLastItem = 0;
+    }
+    
+    // Генерация редких предметов
+    if (Math.random() < 0.002) {
+        rareItems.push({
+            x: canvas.width,
+            y: Math.random() * 150 + 50,
+            width: 60,
+            height: 60
+        });
+    }
+    
+    // Движение объектов
+    obstacles.forEach(obstacle => obstacle.x -= gameSpeed);
+    items.forEach(item => item.x -= gameSpeed);
+    rareItems.forEach(item => item.x -= gameSpeed);
+    
+    // Удаление вышедших за экран объектов
+    obstacles = obstacles.filter(obstacle => obstacle.x + obstacle.width > 0);
+    items = items.filter(item => item.x + item.width > 0);
+    rareItems = rareItems.filter(item => item.x + item.width > 0);
+    
+    // Проверка столкновений
+    checkCollisions();
+    
+    // Отрисовка объектов
+    drawObstacles();
+    drawItems();
+    drawRareItems();
+    drawDino();
+    
+    // Обновление фона
+    updateBackground();
+    
+    // Обновление скорости
+    updateGameSpeed();
+    
+    // Отображение счета
+    ctx.fillStyle = "white";
+    ctx.font = "24px Arial bold";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.shadowColor = "black";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    ctx.fillText("Вы собрали " + score + " мг", 20, 30);
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    
+    requestAnimationFrame(update);
+}
         
+		
+		// обработка коллизий
         function checkCollisions() {
     const pickupSound = document.getElementById("pickupSound");
 	const looseSound = document.getElementById("looseSound");
