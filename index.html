@@ -11,7 +11,8 @@
     </style>
 </head>
 <body>
-    <div class="info">Нажмите ПРОБЕЛ, чтобы прыгать</div>
+    <div class="info">Нажмите ПРОБЕЛ или тапните по экрану, чтобы прыгать</div>
+	
     <canvas id="gameCanvas" width="800" height="300"></canvas>
 	
 <audio id="bgMusic" loop>
@@ -510,16 +511,27 @@ function update() {
         }
         
         // Управление
-        document.addEventListener("keydown", function(e) {
-    if (e.code === "Space" && dino.onGround) {
-        dino.dy = dino.jumpPower;
+		document.addEventListener("keydown", function(e) {
+			if (e.code === "Space" && dino.onGround) {
+				jump();
+			}
+		});
 
-        // Воспроизводим звук прыжка
-        const jumpSound = document.getElementById("jumpSound");
-        jumpSound.currentTime = 0; // Чтобы звук можно было проигрывать быстро подряд
-        jumpSound.play().catch(e => console.log("Ошибка воспроизведения:", e));
-    }
-});
+		document.addEventListener("touchstart", function() {
+			if (dino.onGround) {
+				jump();
+			}
+		});
+
+		function jump() {
+			dino.dy = dino.jumpPower;
+
+			// Воспроизводим звук прыжка
+			const jumpSound = document.getElementById("jumpSound");
+			jumpSound.currentTime = 0; 
+			jumpSound.play().catch(e => console.log("Ошибка воспроизведения:", e));
+		}
+
 
 		 
 
